@@ -1,0 +1,15 @@
+.DS_Store
+*.swp
+__pycache__/
+*.pyc
+.venv/
+.env
+.idea/
+.vscode/
+.learning-progress.json
+labs/aws/.localstack/
+node_modules/
+out/
+dist/
+docs/audio/
+docs/videos/

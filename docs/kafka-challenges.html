@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Desafios Kafka | Engineering Learning Lab</title>
+    <link rel="stylesheet" href="./studies.css" />
+  </head>
+  <body>
+    <div class="study-shell">
+      <header class="study-header">
+        <div class="track-topbar">
+          <a class="track-logo" href="./index.html">Engineering Learning Lab</a>
+          <nav class="track-tabs" aria-label="Tipos de desafio">
+            <a class="active" href="./kafka.html">Kafka</a>
+            <a href="./index.html#algoritmos">Algoritmos</a>
+            <a href="./index.html#system-design">System Design</a>
+            <a href="./index.html#aws">AWS</a>
+          </nav>
+        </div>
+        <div class="study-header-inner">
+          <div>
+            <p class="eyebrow">Trilha Kafka</p>
+            <h1>Desafios Kafka</h1>
+            <p class="lede">
+              Cada desafio tem um ambiente Docker proprio no repositorio, um roteiro de execucao
+              e um verificador local. Abra o lab para visualizar README, docker-compose.yml,
+              verify.sh e solution.md antes de baixar ou executar qualquer arquivo.
+            </p>
+          </div>
+          <div class="header-actions">
+            <a class="button primary" href="./kafka.html">Estudo teorico</a>
+            <a class="button" href="./kafka/challenges.md">Indice em Markdown</a>
+          </div>
+        </div>
+      </header>
+
+      <main class="challenge-catalog" id="challenge-catalog"></main>
+
+      <footer class="footer">
+        Para executar: entre na pasta do desafio em <code>labs/kafka/challenges/&lt;id&gt;</code>,
+        rode <code>docker compose up -d</code> e depois <code>./verify.sh</code>.
+      </footer>
+    </div>
+
+    <script src="./kafka-challenges-data.js"></script>
+    <script src="./kafka-challenges-page.js"></script>
+  </body>
+</html>

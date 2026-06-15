@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Estudos Kafka | Engineering Learning Lab</title>
+    <link rel="stylesheet" href="./studies.css" />
+  </head>
+  <body>
+    <div class="study-shell">
+      <header class="study-header">
+        <div class="track-topbar">
+          <a class="track-logo" href="./index.html">Engineering Learning Lab</a>
+          <nav class="track-tabs" aria-label="Tipos de desafio">
+            <a class="active" href="./kafka.html">Kafka</a>
+            <a href="./kafka-challenges.html">Desafios Kafka</a>
+            <a href="./index.html#algoritmos">Algoritmos</a>
+            <a href="./index.html#system-design">System Design</a>
+            <a href="./index.html#aws">AWS</a>
+          </nav>
+        </div>
+        <div class="study-header-inner">
+          <div>
+            <p class="eyebrow">Trilha Kafka</p>
+            <h1 id="title">Estudos Kafka</h1>
+            <p id="summary" class="lede"></p>
+          </div>
+          <div class="header-actions">
+            <a class="button primary" href="#video">Comecar estudo</a>
+            <a class="button" href="./kafka-challenges.html">Ver desafios</a>
+            <a class="button" href="./kafka/message-lifecycle.md">Abrir documento</a>
+          </div>
+        </div>
+      </header>
+
+      <div class="study-layout">
+        <nav id="study-nav" class="study-nav" aria-label="Navegacao dos estudos"></nav>
+
+        <main class="content">
+          <section id="visao" class="panel">
+            <div class="section-heading">
+              <h2>Visao Geral</h2>
+              <span>antes dos desafios</span>
+            </div>
+            <div class="grid-2">
+              <div>
+                <h3 id="theory-title"></h3>
+                <p id="theory-summary" class="summary"></p>
+                <div id="concept-tags" class="tag-list"></div>
+              </div>
+              <div class="mini-card">
+                <h3>Objetivos de estudo</h3>
+                <ul id="goals" class="detail-list"></ul>
+              </div>
+            </div>
+          </section>
+
+          <section id="video" class="panel">
+            <div class="section-heading">
+              <h2>Video e Mapa Visual</h2>
+              <span>Kafka de ponta a ponta</span>
+            </div>
+            <div class="video-grid">
+              <div>
+                <video id="study-video" controls playsinline preload="metadata"></video>
+                <p><a id="video-link" href="./videos/kafka-study-guide.mp4">Abrir video em nova aba</a></p>
+                <p class="ai-disclosure">A narracao deste video e gerada por IA.</p>
+              </div>
+              <div id="diagram" class="diagram"></div>
+            </div>
+          </section>
+
+          <section id="linha-do-tempo" class="panel">
+            <div class="section-heading">
+              <h2>Linha do Tempo da Mensagem</h2>
+              <span>da aplicacao ao offset commit</span>
+            </div>
+            <div id="timeline" class="timeline"></div>
+          </section>
+
+          <section id="definicoes" class="panel">
+            <div class="section-heading">
+              <h2>Definicoes Documentadas</h2>
+              <span>conceito, exemplo e impacto</span>
+            </div>
+            <div id="documented-definitions" class="definition-grid"></div>
+          </section>
+
+          <section id="etapas-tecnicas" class="panel">
+            <div class="section-heading">
+              <h2>Etapas Tecnicas Detalhadas</h2>
+              <span>internals, configs e decisoes</span>
+            </div>
+            <div id="technical-stages" class="stage-list"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-heading">
+              <h2>Como Funciona por Dentro</h2>
+              <span>detalhes tecnicos</span>
+            </div>
+            <ul id="deep-dive" class="detail-list"></ul>
+          </section>
+
+          <section id="glossario" class="panel">
+            <div class="section-heading">
+              <h2>Glossario Aprofundado</h2>
+              <span>conceito + implicacao de design</span>
+            </div>
+            <div id="glossary" class="glossary"></div>
+          </section>
+
+          <section id="system-design" class="panel">
+            <div class="section-heading">
+              <h2>Questoes de System Design</h2>
+              <span>perguntas que guiam arquitetura</span>
+            </div>
+            <div class="grid-2">
+              <div class="mini-card">
+                <h3>Trade-offs principais</h3>
+                <ul id="design-questions" class="detail-list"></ul>
+              </div>
+              <div class="mini-card">
+                <h3>Armadilhas</h3>
+                <ul id="pitfalls" class="detail-list"></ul>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="section-heading">
+              <h2>Ao Final Voce Deve Saber</h2>
+              <span>check mental</span>
+            </div>
+            <ul id="takeaways" class="detail-list"></ul>
+          </section>
+
+          <section id="referencias" class="panel">
+            <div class="section-heading">
+              <h2>Referencias Tecnicas</h2>
+              <span>documentacao oficial e artigos</span>
+            </div>
+            <ol id="references" class="reference-list"></ol>
+          </section>
+        </main>
+      </div>
+
+      <footer class="footer">
+        Esta pagina e estatica e foi pensada para GitHub Pages. O painel local de labs continua em app/.
+      </footer>
+    </div>
+
+    <script src="./studies-data.js"></script>
+    <script src="./studies-app.js"></script>
+  </body>
+</html>

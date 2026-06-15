@@ -1,0 +1,24 @@
+{
+  "scripts": {
+    "app": "node app/server.js",
+    "audio:kafka-study": "node scripts/add-kafka-study-audio.js",
+    "audio:kafka-study:openai": "TTS_PROVIDER=openai node scripts/add-kafka-study-audio.js",
+    "generate:kafka-labs": "node scripts/generate-kafka-challenge-labs.js",
+    "build:studies": "node scripts/build-studies-site.js",
+    "remotion:studio": "remotion studio src/remotion/index.ts",
+    "remotion:render": "remotion render src/remotion/index.ts ChallengeOverview out/challenge-overview.mp4",
+    "remotion:render:challenges": "node scripts/render-challenge-videos.js",
+    "remotion:render:kafka": "node scripts/render-kafka-videos.js",
+    "remotion:render:kafka-study": "node scripts/render-kafka-study-video.js"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.316",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "remotion": "^4.0.316"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.8",
+    "typescript": "^5.8.3"
+  }
+}

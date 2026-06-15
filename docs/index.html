@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Engineering Learning Lab | Escolha uma trilha</title>
+    <link rel="stylesheet" href="./studies.css" />
+  </head>
+  <body>
+    <div class="study-shell">
+      <header class="study-header landing-header">
+        <div class="track-topbar">
+          <a class="track-logo" href="./index.html">Engineering Learning Lab</a>
+          <nav class="track-tabs" aria-label="Tipos de desafio">
+            <a href="./kafka.html">Kafka</a>
+            <a href="#algoritmos">Algoritmos</a>
+            <a href="#system-design">System Design</a>
+            <a href="#aws">AWS</a>
+          </nav>
+        </div>
+        <div class="landing-hero">
+          <p class="eyebrow">Escolha sua trilha</p>
+          <h1>Que tipo de desafio voce quer estudar agora?</h1>
+          <p class="lede">
+            Cada trilha organiza teoria, desenho visual, video, referencias e desafios praticos.
+            Kafka ja esta completo; as demais trilhas ficam preparadas para receber os proximos modulos.
+          </p>
+        </div>
+      </header>
+
+      <main class="track-picker">
+        <a id="kafka" class="track-card available" href="./kafka.html">
+          <span>Disponivel</span>
+          <strong>Kafka</strong>
+          <p>
+            Log distribuido, broker, topic, partition, offset, ISR, high watermark,
+            consumer groups, retention, transactions e operacao.
+          </p>
+          <small>1 estudo profundo + 18 desafios com Docker</small>
+        </a>
+
+        <article id="algoritmos" class="track-card">
+          <span>Em breve</span>
+          <strong>Algoritmos</strong>
+          <p>
+            Estruturas de dados, complexidade, ordenacao, busca, grafos, heaps,
+            sliding window, dynamic programming e exercicios guiados.
+          </p>
+          <small>Planejado</small>
+        </article>
+
+        <article id="system-design" class="track-card">
+          <span>Em breve</span>
+          <strong>System Design</strong>
+          <p>
+            Rate limiting, cache, bancos distribuidos, consistencia, escalabilidade,
+            resiliencia, observabilidade e trade-offs arquiteturais.
+          </p>
+          <small>Planejado</small>
+        </article>
+
+        <article id="aws" class="track-card">
+          <span>Em breve</span>
+          <strong>AWS</strong>
+          <p>
+            SQS, SNS, DynamoDB, Lambda, ECS, observabilidade, seguranca, IAM,
+            desenho serverless e laboratorios locais antes da cloud.
+          </p>
+          <small>Planejado</small>
+        </article>
+      </main>
+
+      <footer class="footer">
+        Publicacao estatica via GitHub Pages. A trilha Kafka e a primeira trilha ativa.
+      </footer>
+    </div>
+  </body>
+</html>

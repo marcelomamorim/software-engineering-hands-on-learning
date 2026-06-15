@@ -1,0 +1,249 @@
+Bem-vindo ao estudo Kafka antes dos desafios.
+
+Hoje a ideia nao e decorar nomes. A ideia e acompanhar uma mensagem real, de um pedido real, passando pelo Kafka, e parar sempre que um conceito importante aparecer.
+
+Em cada parada, vamos fazer tres coisas.
+
+Primeiro: ler a definicao do conceito, usando a documentacao oficial do Kafka como referencia.
+
+Segundo: conectar essa definicao com o nosso exemplo de pedidos.
+
+Terceiro: entender qual decisao de system design nasce desse conceito.
+
+Vamos ao contexto.
+
+Temos uma API de checkout rodando no IP 10.0.20.50.
+
+Temos tres brokers Kafka: broker-1 no IP 10.0.10.11, broker-2 no IP 10.0.10.12, e broker-3 no IP 10.0.10.13.
+
+O topic se chama orders.events.
+
+E o pedido do exemplo e ORD-9001.
+
+Primeira parada: evento de dominio.
+
+Na documentacao do Kafka, o Kafka trabalha com streams de eventos. Um evento registra o fato de que algo aconteceu no mundo ou no seu negocio.
+
+No nosso caso, o fato e: o pedido foi criado. O nome do evento e OrderCreated.
+
+Perceba a diferenca: OrderCreated nao e uma ordem para criar pedido. OrderCreated e a noticia de que o pedido ja foi criado.
+
+Essa diferenca muda o desenho do sistema. Se o evento representa um fato, varios consumidores podem reagir sem perguntar novamente para o checkout o que aconteceu. O servico de pagamento pode reagir. O servico de estoque pode reagir. Analytics pode reagir. Notificacao pode reagir.
+
+Agora conecte com system design: o evento precisa ter identidade. Por isso usamos event_id. Ele tambem precisa ter a entidade causal. Por isso usamos order_id. Sem esses campos, voce nao consegue deduplicar, rastrear, reprocessar ou explicar a ordem dos acontecimentos.
+
+Segunda parada: record.
+
+Na documentacao do Kafka, producers publicam records em topics. Um record e a unidade que carrega key, value, timestamp e, na pratica moderna, tambem headers.
+
+No nosso exemplo, o record tem topic igual a orders.events, key igual a ORD-9001, e value igual ao payload do evento OrderCreated.
+
+A key nao e um detalhe pequeno. Ela sera usada para decidir a partition. Entao, quando escolhemos order_id como key, estamos dizendo: a ordem importante para este sistema e a ordem dos eventos de um mesmo pedido.
+
+Agora vem a conexao: se depois vier PaymentApproved, StockReserved e OrderShipped com a mesma key ORD-9001, Kafka tende a colocar esses eventos na mesma partition. Isso preserva a ordem relativa do pedido.
+
+Terceira parada: producer.
+
+Na documentacao oficial, producer e o client que publica records no Kafka.
+
+Mas internamente, producer nao e so um pedaco de codigo que manda HTTP. Ele mantem metadata do cluster, escolhe partition, acumula batches, controla retries, timeouts, requests em voo e confirmacoes.
+
+No nosso exemplo, o producer esta dentro da order-api. Ele recebe o evento OrderCreated e precisa decidir como publicar com seguranca.
+
+A decisao de system design aqui e: qual garantia voce quer antes de responder para o usuario ou antes de seguir o fluxo? Para pedido e pagamento, normalmente queremos producer idempotente, retries controlados, acks igual a all, e observabilidade forte.
+
+Quarta parada: bootstrap servers.
+
+Na documentacao, bootstrap.servers e a lista inicial de hosts usada pelo client para descobrir o cluster Kafka.
+
+Importante: bootstrap nao significa que o producer vai mandar tudo para aquele endereco para sempre. Bootstrap e so a porta de entrada.
+
+No nosso exemplo, o producer conecta em kafka.prod porta 9092. Esse endereco responde com metadata: quais brokers existem, quais topics existem, quais partitions existem, e qual broker e leader de cada partition.
+
+Agora a parte de infraestrutura: depois do bootstrap, o client precisa conseguir acessar os enderecos anunciados pelos brokers. Se advertised.listeners apontar para um hostname interno errado, o bootstrap funciona, mas o envio real falha.
+
+Essa e uma das causas mais comuns de confusao em Docker, Kubernetes e redes privadas.
+
+Quinta parada: broker.
+
+Na documentacao do Kafka, o cluster e formado por servidores chamados brokers. Cada broker armazena dados e atende clients.
+
+Traduzindo para infraestrutura: broker e um processo de servidor Kafka. Ele pode rodar numa maquina fisica, numa VM, num container ou num pod Kubernetes. Mas em todos os casos ele precisa de CPU, memoria, rede e disco.
+
+No nosso exemplo, broker-1 esta em 10.0.10.11 porta 9092. Broker-2 esta em 10.0.10.12. Broker-3 esta em 10.0.10.13.
+
+Nao pense em broker como uma caixa abstrata. Pense em um processo stateful, com disco persistente, page cache do sistema operacional, logs de partition, configuracao de listener e metricas de operacao.
+
+Sexta parada: topic.
+
+Na documentacao, topic e uma categoria ou nome de feed para onde records sao publicados.
+
+No nosso exemplo, o topic orders.events e o feed de eventos de pedidos.
+
+Mas o nome do topic tambem carrega uma decisao de arquitetura. Um topic precisa ter dono, contrato, retencao, politica de compatibilidade e consumidores esperados.
+
+Se o topic for generico demais, como events, ninguem sabe quem e dono. Se for especifico demais, voce cria explosao operacional. Entao orders.events e um meio termo: orientado ao dominio de pedidos.
+
+Setima parada: partition.
+
+Na documentacao, cada topic e dividido em partitions. Uma partition e um log ordenado e imutavel, onde cada record recebe um offset.
+
+Essa frase e uma das mais importantes de Kafka.
+
+Kafka nao garante ordem global do topic inteiro. Kafka garante ordem dentro de uma partition.
+
+No nosso exemplo, orders.events tem 12 partitions. O partitioner calcula a partition usando a key ORD-9001. Imagine que o resultado seja partition 4.
+
+Agora conecte com system design. Se a ordem do pedido importa, order_id e uma boa key. Se a ordem por cliente importa, talvez customer_id seja melhor. Se voce escolhe uma key muito concentrada, como um tenant gigante, cria hot partition.
+
+Entao partition e, ao mesmo tempo, unidade de ordem, unidade de paralelismo, unidade de armazenamento, unidade de replicacao e unidade de assignment para consumers.
+
+Oitava parada: offset.
+
+Na documentacao, offset e a posicao de um record dentro de uma partition.
+
+Offset nao e uma posicao global no topic. Offset 128 da partition 4 nao e a mesma coisa que offset 128 da partition 5.
+
+No nosso pedido, OrderCreated pode receber offset 128 na partition 4. Depois PaymentApproved pode receber offset 129 na mesma partition. Essa sequencia permite explicar a ordem dos fatos daquele pedido.
+
+Agora a armadilha: offset nao e confirmacao de negocio. Offset e posicao no log. A confirmacao de que o pagamento foi gravado no banco e outra historia, que depende da aplicacao consumidora.
+
+Nona parada: batch.
+
+Na documentacao de producer, Kafka trabalha com envio eficiente de records, e o producer pode agrupar records em batches.
+
+Isso explica parte do alto throughput do Kafka. Em vez de tratar cada evento como uma escrita isolada, o producer junta records da mesma topic-partition.
+
+batch.size controla o tamanho alvo. linger.ms permite esperar um pouco para formar batches maiores. compression.type reduz bytes em rede e disco.
+
+A conexao de design e um trade-off classico: latency versus throughput. Para checkout critico, voce talvez aceite batch menor. Para analytics, voce pode aceitar mais espera para ganhar compressao e vazao.
+
+Decima parada: leader.
+
+Na documentacao de replicacao, cada partition tem um leader. Todos os reads e writes daquela partition passam pelo leader.
+
+No nosso exemplo, orders.events partition 4 e liderada por broker-1.
+
+Entao o producer nao envia o record para qualquer broker. Ele envia para o broker que lidera aquela partition.
+
+Isso importa porque a distribuicao de leaders define a carga real do cluster. Um broker pode ter muitas replicas, mas se ele lidera partitions demais, ele concentra CPU, rede, page cache e latencia.
+
+Decima primeira parada: append-only log.
+
+Na documentacao de design e implementacao, Kafka e construido sobre logs. Um log e uma sequencia append-only de records.
+
+Append-only significa que o broker escreve no final do arquivo, de forma sequencial. Isso combina muito bem com disco e page cache.
+
+No broker, a partition vira arquivos como .log, .index e .timeindex. O arquivo .log guarda os batches. O indice ajuda a encontrar offsets. O indice de tempo ajuda buscas por timestamp.
+
+Essa parte conecta o Kafka com infraestrutura. Disco nao e detalhe. Tipo de volume, latencia, throughput, page cache, espaco livre e tamanho de segmentos afetam o comportamento do sistema.
+
+Decima segunda parada: replication factor.
+
+Na documentacao, replication factor define quantas copias de cada partition existem no cluster.
+
+Com replication factor 3, a partition 4 pode ter copia em broker-1, broker-2 e broker-3.
+
+Mas cuidado: replication factor e a configuracao desejada. Ele nao prova que as tres replicas estao sincronizadas neste exato momento.
+
+Para system design, RF igual a 3 costuma ser uma base razoavel em producao, mas custa disco e rede. Cada byte produzido pode virar tres bytes armazenados, alem das leituras dos consumidores.
+
+Decima terceira parada: follower.
+
+Na documentacao de replicacao, replicas que nao sao leader seguem o leader. Elas buscam os dados do leader e mantem copia da partition.
+
+No nosso exemplo, broker-2 e broker-3 sao followers da partition 4.
+
+Se broker-1 cair, uma replica follower que esteja em dia pode virar novo leader.
+
+Essa frase liga replicacao com tolerancia a falha: followers nao existem para enfeitar o desenho. Eles existem para permitir continuidade quando o leader falha.
+
+Decima quarta parada: ISR.
+
+Na documentacao do Kafka, ISR significa In-Sync Replicas. E o conjunto de replicas que estao sincronizadas com o leader.
+
+Agora vamos devagar.
+
+Replication factor pode ser 3. Mas ISR pode ser 3, 2 ou 1, dependendo do estado real do cluster.
+
+Se broker-3 fica lento, ele pode sair do ISR. Nesse momento, as replicas configuradas ainda sao broker-1, broker-2 e broker-3, mas as replicas realmente em sincronia podem ser apenas broker-1 e broker-2.
+
+Essa distincao e central. RF e desejo. ISR e realidade operacional.
+
+Quando voce explicar durabilidade em Kafka, nao diga apenas: temos replication factor 3. Diga: temos replication factor 3, min.insync.replicas 2, e estamos monitorando ISR para saber se a redundancia real ainda existe.
+
+Decima quinta parada: acks.
+
+Na documentacao de producer, acks define quantas confirmacoes o producer espera antes de considerar a escrita bem-sucedida.
+
+Com acks igual a 0, o producer nao espera confirmacao.
+
+Com acks igual a 1, o leader confirma.
+
+Com acks igual a all, a confirmacao depende das replicas in-sync e da configuracao min.insync.replicas.
+
+No nosso desenho, usamos acks igual a all e min.insync.replicas igual a 2. Isso significa: o producer so recebe sucesso se pelo menos duas replicas em sincronia participarem da confirmacao.
+
+A decisao de system design e clara: para eventos criticos de pedido, preferimos falhar a escrita durante degradacao severa do que confirmar um dado que pode sumir.
+
+Decima sexta parada: high watermark.
+
+Na documentacao de replicacao, o high watermark e o ponto ate onde o log foi replicado de forma segura e pode ser exposto para leitura.
+
+Imagine que o leader tem offsets 0 ate 130, mas os followers in-sync so copiaram ate 129. O high watermark fica em 129.
+
+Por que isso existe? Para impedir que um consumer leia o offset 130, tome uma decisao de negocio, e depois esse record desapareca numa troca de leader.
+
+High watermark e, portanto, uma protecao de consistencia. Ele troca um pouco de visibilidade imediata por leitura mais segura.
+
+Decima setima parada: consumer.
+
+Na documentacao oficial, consumer e o client que le records de topics.
+
+Mas no desenho real, consumer nao e apenas leitor. Ele faz fetch em batches, processa records, controla poll, lida com erro, decide quando commitar offset e precisa ser idempotente.
+
+No nosso exemplo, payment-service consome OrderCreated. Depois de processar, ele pode produzir PaymentApproved.
+
+Aqui aparece uma conexao importante: Kafka liga sistemas, mas nao executa regra de negocio por voce. O consumer e onde a garantia de negocio comeca a ficar perigosa.
+
+Decima oitava parada: consumer group.
+
+Na documentacao, consumer group permite que varios consumers dividam as partitions de um topic.
+
+Se orders.events tem 12 partitions e payment-service tem 3 instancias no mesmo group.id, cada instancia pode receber 4 partitions.
+
+Se voce adiciona uma quarta instancia, pode ocorrer rebalance.
+
+System design: mais consumers que partitions nao aumenta paralelismo. E uma partition quente pode deixar uma instancia sobrecarregada enquanto as outras parecem tranquilas.
+
+Decima nona parada: offset commit.
+
+Na documentacao de consumer, offsets sao usados para controlar a posicao de leitura de um consumer group.
+
+O commit de offset grava progresso, normalmente no topic interno __consumer_offsets.
+
+Mas commit nao apaga a mensagem. E tambem nao garante que um efeito externo aconteceu exatamente uma vez.
+
+Vamos conectar com o pagamento. Se o consumer grava o pagamento no banco e cai antes de commitar offset, ele pode processar o mesmo evento de novo. Se ele commita antes de gravar no banco e cai, pode perder o processamento.
+
+Por isso, a arquitetura precisa de idempotencia, tabela de deduplicacao, transactional outbox, ou outro mecanismo de protecao.
+
+Vigesima parada: retention e replay.
+
+Na documentacao, Kafka retém records por politica de tempo, tamanho ou compactacao. A leitura por consumer nao remove automaticamente o record.
+
+Isso muda o modelo mental. Kafka nao e simplesmente uma fila onde a mensagem some depois do consumo. Kafka e um log retido, que permite reprocessamento.
+
+System design: retention longa ajuda auditoria, replay e recuperacao. Mas custa disco. Retention curta reduz custo, mas limita investigacao e reprocessamento.
+
+Agora feche a historia.
+
+O evento OrderCreated nasceu na order-api. O producer criou um record. O bootstrap descobriu metadata. A key order_id escolheu a partition. O producer agrupou o record em batch. O request foi ao leader. O broker fez append no log e atribuiu offset. Followers replicaram. ISR e acks definiram a confirmacao. High watermark definiu a leitura segura. O consumer leu, processou e commitou offset.
+
+Essa sequencia e a explicacao completa.
+
+Quando voce estiver numa entrevista ou num design review, nao diga apenas que Kafka e mensageria.
+
+Diga que Kafka e um log distribuido particionado, com producers, topics, partitions, offsets, leaders, followers, ISR, high watermark, consumer groups e retention.
+
+E diga tambem a parte mais importante: Kafka fornece infraestrutura de streaming e armazenamento de eventos. A garantia final de negocio depende das decisoes da aplicacao, como idempotencia, contrato de evento, chave de particionamento, politica de retry, DLQ, outbox, monitoramento de lag e runbook de falha.

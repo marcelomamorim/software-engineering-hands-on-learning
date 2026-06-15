@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Engineering Learning Lab</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-mark">SD</span>
+          <div>
+            <strong>Learning Lab</strong>
+            <span>System Design + Kafka</span>
+          </div>
+        </div>
+        <div class="progress-summary">
+          <span>Progresso geral</span>
+          <strong id="overall-progress">0%</strong>
+          <div class="meter"><div id="overall-bar"></div></div>
+        </div>
+        <nav id="challenge-nav" class="challenge-nav"></nav>
+      </aside>
+
+      <main class="workspace">
+        <section class="topbar">
+          <div>
+            <p id="challenge-area" class="eyebrow"></p>
+            <h1 id="challenge-title"></h1>
+          </div>
+          <button id="evaluate-button" class="primary-button" type="button">
+            Avaliar desafio
+          </button>
+        </section>
+
+        <section class="challenge-layout">
+          <div class="main-column">
+            <section id="theory-panel" class="panel theory-panel">
+              <div class="section-heading">
+                <h2>Estudo teorico</h2>
+                <span>antes do desafio</span>
+              </div>
+              <div class="theory-layout">
+                <div>
+                  <video id="challenge-video" class="challenge-video-player" controls muted playsinline preload="metadata">
+                    <source id="challenge-video-source" src="" type="video/mp4" />
+                  </video>
+                  <a id="challenge-video-link" class="video-link" href="#" target="_blank" rel="noreferrer">Abrir video explicativo</a>
+                </div>
+                <div class="theory-content">
+                  <h3 id="theory-title"></h3>
+                  <p id="theory-summary"></p>
+                  <div id="theory-diagram" class="theory-diagram"></div>
+                </div>
+              </div>
+              <div class="theory-columns">
+                <div>
+                  <h3>Objetivos de estudo</h3>
+                  <ul id="theory-goals" class="detail-list"></ul>
+                </div>
+                <div>
+                  <h3>Conteudo tecnico</h3>
+                  <ul id="theory-ideas" class="detail-list"></ul>
+                </div>
+                <div>
+                  <h3>Antes de comecar</h3>
+                  <ul id="theory-prelab" class="detail-list"></ul>
+                </div>
+              </div>
+              <div id="theory-deep-section" class="theory-study-section">
+                <h3>Como funciona por dentro</h3>
+                <ul id="theory-deep-dive" class="detail-list"></ul>
+              </div>
+              <div class="theory-columns theory-columns-compact">
+                <div>
+                  <h3>Armadilhas</h3>
+                  <ul id="theory-pitfalls" class="detail-list"></ul>
+                </div>
+                <div>
+                  <h3>Ao final voce deve saber</h3>
+                  <ul id="theory-takeaways" class="detail-list"></ul>
+                </div>
+                <div>
+                  <h3>Referencias tecnicas</h3>
+                  <ul id="theory-refs" class="reference-list"></ul>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="section-heading">
+                <h2>Objetivo</h2>
+                <span id="challenge-meta"></span>
+              </div>
+              <p id="challenge-summary"></p>
+              <div id="concept-list" class="tag-list"></div>
+            </section>
+
+            <section class="panel">
+              <div class="section-heading">
+                <h2>Cenario</h2>
+                <span>contexto do problema</span>
+              </div>
+              <p id="challenge-scenario"></p>
+            </section>
+
+            <section class="panel detail-grid">
+              <div>
+                <div class="section-heading">
+                  <h2>Passos</h2>
+                  <span>execucao</span>
+                </div>
+                <ol id="task-list" class="detail-list"></ol>
+              </div>
+              <div>
+                <div class="section-heading">
+                  <h2>Decisoes</h2>
+                  <span>trade-offs</span>
+                </div>
+                <ul id="decision-list" class="detail-list"></ul>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="section-heading">
+                <h2>Entregaveis</h2>
+                <span>o que produzir</span>
+              </div>
+              <ul id="deliverable-list" class="detail-list"></ul>
+            </section>
+
+            <section class="panel">
+              <div class="section-heading">
+                <h2>Ambiente local</h2>
+                <span id="environment-label"></span>
+              </div>
+              <div id="action-list" class="action-grid"></div>
+              <pre id="command-output" class="terminal" aria-live="polite"></pre>
+            </section>
+
+            <section class="panel">
+              <div class="section-heading">
+                <h2>Avaliacao</h2>
+                <span id="evaluation-state">Nao avaliado</span>
+              </div>
+              <div id="evaluation-result" class="evaluation-result"></div>
+            </section>
+          </div>
+
+          <aside class="work-panel">
+            <section class="panel">
+              <div class="section-heading">
+                <h2>Checklist</h2>
+                <span id="challenge-progress">0%</span>
+              </div>
+              <div class="meter"><div id="challenge-bar"></div></div>
+              <div id="checklist" class="checklist"></div>
+            </section>
+
+            <section class="panel">
+              <div class="section-heading">
+                <h2>Anotacoes</h2>
+                <span>salvo localmente</span>
+              </div>
+              <textarea id="notes" placeholder="Registre respostas, comandos, hipoteses, falhas observadas e decisoes."></textarea>
+              <button id="save-button" class="secondary-button" type="button">
+                Salvar progresso
+              </button>
+            </section>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
