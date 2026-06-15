@@ -1,114 +1,141 @@
 # Software Engineering Hands-on Learning
 
-Projeto pessoal para estudar engenharia de software de forma pratica, com foco inicial profundo em:
+Projeto pessoal para estudar engenharia de software de forma pratica, com foco atual em uma trilha profunda de Apache Kafka.
 
-- System Design
-- Apache Kafka
-- DynamoDB
-- SQS
+O repositorio combina estudo teorico, visualizacoes locais, videos explicativos, laboratorios Docker e verificadores sistemicos para treinar raciocinio de system design com evidencias observaveis.
 
-A proposta deste repositorio e aprender construindo. Cada modulo combina leitura orientada, desenho de arquitetura, implementacao, experimentos, perguntas de revisao e pequenas decisoes tecnicas documentadas.
+## O que existe agora
 
-## Como usar
-
-1. Comece por [docs/curriculo.md](docs/curriculo.md).
-2. Estude System Design em [docs/system-design/README.md](docs/system-design/README.md).
-3. Use o workbook de referencia em [docs/system-design/livro-referencia.md](docs/system-design/livro-referencia.md).
-4. Rode os laboratorios de Kafka em [docs/kafka/README.md](docs/kafka/README.md).
-5. Estude DynamoDB em [docs/dynamodb/README.md](docs/dynamodb/README.md).
-6. Estude SQS em [docs/sqs/README.md](docs/sqs/README.md).
-7. Use o projeto integrador em [projects/event-driven-marketplace/README.md](projects/event-driven-marketplace/README.md) para juntar os temas.
+- Pagina estatica de estudos publicada via GitHub Pages.
+- Trilha Kafka com estudo teorico antes dos desafios.
+- 18 desafios Kafka com README, `docker-compose.yml`, `verify.sh`, `systemic-verify.sh` e `solution.md`.
+- Videos Remotion locais para explicar os conceitos e desafios.
+- Validacao sistemica: os scripts tentam observar Kafka em execucao, produzir/consumir mensagens, checar topics, ISR, configs, offsets ou evidencias arquiteturais.
 
 ## Estrutura
 
 ```text
 .
+|-- app/
+|   |-- kafka-challenges.js
+|   `-- public/videos/
 |-- docs/
-|   |-- curriculo.md
-|   |-- dynamodb/
-|   |-- kafka/
-|   |-- sqs/
-|   |-- system-design/
-|   `-- templates/
-|-- labs/
-|   |-- aws/
+|   |-- index.html
+|   |-- kafka.html
+|   |-- kafka-challenges.html
 |   `-- kafka/
-`-- projects/
-    `-- event-driven-marketplace/
+|-- labs/
+|   `-- kafka/
+|       |-- challenges/
+|       |-- docker-compose.yml
+|       `-- docker-compose.cluster.yml
+|-- scripts/
+|-- src/remotion/
+`-- .github/workflows/deploy-studies.yml
 ```
 
-## Filosofia
+## Rodar localmente
 
-- Entender fundamentos antes de decorar ferramentas.
-- Desenhar sistemas e depois validar as hipoteses com codigo.
-- Escrever decisoes tecnicas para treinar julgamento.
-- Medir comportamento: latencia, throughput, falhas, consumo, retencao e consistencia.
-- Repetir os mesmos problemas em camadas cada vez mais realistas.
+Instale dependencias:
 
-## Proximo passo recomendado
+```bash
+npm ci
+```
 
-Abra o painel local de desafios:
+Suba o painel local:
 
 ```bash
 npm run app
 ```
 
-Depois acesse:
+Acesse:
 
 ```text
 http://localhost:4173
 ```
 
-O painel permite subir ambientes locais, acompanhar checklist, salvar anotacoes e avaliar se o desafio foi concluido.
+## Site estatico de estudos
 
-## Animacao dos desafios
+Gerar o artefato usado pelo GitHub Pages:
 
-Foi criada uma composicao Remotion para explicar visualmente como os desafios funcionam:
+```bash
+npm run build:studies
+```
+
+O build gera:
+
+```text
+dist/studies
+```
+
+O workflow `.github/workflows/deploy-studies.yml` roda `npm ci`, valida TypeScript, executa `npm run build:studies` e publica `dist/studies` no GitHub Pages.
+
+## Labs Kafka
+
+Cada desafio fica em:
+
+```text
+labs/kafka/challenges/<id-do-desafio>
+```
+
+Exemplo:
+
+```bash
+cd labs/kafka/challenges/kafka-single-broker
+docker compose up -d
+./verify.sh
+```
+
+Dentro de cada lab:
+
+```text
+README.md
+docker-compose.yml
+verify.sh
+systemic-verify.sh
+solution.md
+```
+
+O `verify.sh` carrega o verificador do proprio lab:
+
+```bash
+source "$SCRIPT_DIR/systemic-verify.sh" "<id-do-desafio>"
+```
+
+## Remotion
+
+Abrir o studio:
 
 ```bash
 npm run remotion:studio
 ```
 
-Renderizar o video:
-
-```bash
-npm run remotion:render
-```
-
-Renderizar um video explicativo por desafio para o painel:
+Renderizar videos dos desafios:
 
 ```bash
 npm run remotion:render:challenges
 ```
 
-Saida gerada:
-
-```text
-out/challenge-overview.mp4
-app/public/videos/*.mp4
-```
-
-Para DynamoDB e SQS local:
+Renderizar o video longo de estudo Kafka:
 
 ```bash
-cd labs/aws
-docker compose up -d
+npm run remotion:render:kafka-study
 ```
 
-Rode o laboratorio Kafka local:
+## Validacoes
+
+Checar TypeScript:
 
 ```bash
-cd labs/kafka
-docker compose up -d
+npx tsc --noEmit
 ```
 
-Depois siga o roteiro em [labs/kafka/README.md](labs/kafka/README.md).
-
-Para estudar Kafka por dentro, use tambem:
+Checar build do site:
 
 ```bash
-cd labs/kafka
-docker compose -f docker-compose.cluster.yml up -d
+npm run build:studies
 ```
 
-Depois siga [labs/kafka/internals.md](labs/kafka/internals.md).
+## Licenca
+
+MIT.
