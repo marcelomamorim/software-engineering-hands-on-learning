@@ -1,4 +1,4 @@
-name: Deploy Kafka Studies
+name: Publish Studies Site
 
 on:
   push:
@@ -11,15 +11,19 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: github-pages-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
   build:
+    name: Build static studies site
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -36,12 +40,38 @@ jobs:
       - name: Build studies site
         run: npm run build:studies
 
+      - name: Validate Pages artifact
+        run: |
+          test -f dist/studies/index.html
+          test -f dist/studies/kafka.html
+          test -f dist/studies/kafka-challenges.html
+          test -f dist/studies/videos/kafka-study-guide.mp4
+          test -f dist/studies/labs/kafka/challenges/kafka-single-broker/index.html
+          test -f dist/studies/labs/kafka/challenges/kafka-single-broker/systemic-verify.sh
+
+      - name: Deployment summary
+        run: |
+          {
+            echo "## Kafka Studies publication"
+            echo ""
+            echo "| Item | Status |"
+            echo "| --- | --- |"
+            echo "| TypeScript | Passed |"
+            echo "| Static build | Passed |"
+            echo "| Kafka study page | dist/studies/kafka.html |"
+            echo "| Kafka challenges | dist/studies/kafka-challenges.html |"
+            echo "| Lab viewer example | dist/studies/labs/kafka/challenges/kafka-single-broker/index.html |"
+            echo ""
+            echo "The artifact below is ready for GitHub Pages."
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist/studies
 
   deploy:
+    name: Deploy to GitHub Pages
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

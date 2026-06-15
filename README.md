@@ -70,6 +70,18 @@ dist/studies
 
 O workflow `.github/workflows/deploy-studies.yml` roda `npm ci`, valida TypeScript, executa `npm run build:studies` e publica `dist/studies` no GitHub Pages.
 
+No GitHub, configure:
+
+```text
+Settings -> Pages -> Build and deployment -> Source: GitHub Actions
+```
+
+Depois publique a branch principal:
+
+```bash
+git push -u origin main
+```
+
 ## Labs Kafka
 
 Cada desafio fica em:

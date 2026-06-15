@@ -325,6 +325,18 @@ async function build() {
       "studies-data.js",
     ].map((file) => fsp.copyFile(path.join(docsDir, file), path.join(distDir, file)))
   );
+  await fsp.writeFile(path.join(distDir, ".nojekyll"), "", "utf-8");
+  await fsp.copyFile(path.join(docsDir, "index.html"), path.join(distDir, "404.html"));
+  await fsp.writeFile(
+    path.join(distDir, "site.json"),
+    `${quote({
+      name: "Software Engineering Hands-on Learning",
+      track: "Kafka",
+      generatedAt: new Date().toISOString(),
+      entrypoints: ["index.html", "kafka.html", "kafka-challenges.html"],
+    })}\n`,
+    "utf-8"
+  );
   await fsp.mkdir(path.join(distDir, "kafka"), { recursive: true });
   await fsp.cp(labsChallengesDir, distLabsChallengesDir, {
     recursive: true,
